@@ -1,0 +1,95 @@
+\section{$\mu$-Expressions}
+
+We have already seen a class of expressions, namely the $k$-CNF expressions, that can be learnt from positive examples alone. Here we shall consider the other extreme, a class that can be learnt using oracles alone.
+
+Deducing expressions on which there are less severe structural restrictions than DNF or CNF appears much more difficult. The aim of this section is to give a paradigmatic example of how far one can go in that direction if one is willing to pay the price of oracles that are more sophisticated than the one previously described.
+
+A general \emph{expression} over variable set $\{p_1, \ldots, p_t\}$ is defined recursively as follows:
+
+\begin{enumerate}
+    \item[(i)] For each $i$ $(1 \leq i \leq t)$ ``$p_i$'' and ``$\bar{p}_i$'' are expressions.
+
+    \item[(ii)] If $f_1, \ldots, f_r$ are expressions then ``$(f_1 + f_2 + \cdots + f_r)$'' is an expression (called a \emph{plus expression}).
+
+    \item[(iii)] If $f_1, \ldots, f_r$ are expressions then ``$(f_1 \times f_2 \times \cdots \times f_r)$'' is an expression (called a \emph{times expression}).
+\end{enumerate}
+
+A \emph{$\mu$-expression} is an expression in which each variable appears at most once. We can assume that a $\mu$-expression is monotone since we can always relabel negated variables with new names that denote their negation. In the recursive definition of any $\mu$-expression there are clearly at most $2t - 1$ intermediate expressions of which at most $t$ are of type (i) and at most $t - 1$ of types (ii) or (iii). Without loss of generality we shall assume that in the definition of a $\mu$-expression rules (ii) and (iii) alternate. We shall regard two $\mu$-expressions as identical if their definitions can be made formally the same by reordering sums and products and relabelling as necessary.
+
+For learning $\mu$-expressions we shall employ more powerful oracles. The boundary between reasonable and unreasonable oracles does not appear sharp. We make no claims about the reasonableness of these new oracles except that they may serve as vehicles for understanding learnability.
+
+The definitions refer to the Boolean function $F$ (not regarded as a concept here). The oracle of Section~2 will be renamed N-ORACLE since it is one of \emph{necessity}: $\text{N-ORACLE}(v) = 1$ if and only if for all total vectors $w$ such that $w \Rightarrow v$ it is the case that $F(w) = 1$. The dual of this would be a \emph{possibility oracle}: $\text{P-ORACLE}(v) = 1$ if and only if there exists a total vector $w$ such that $w \Rightarrow v$ and $F(w) = 1$. For brevity we shall also define the \emph{prime implicant} oracle: $\text{PI}(v) = 1$ if and only if $\text{N-ORACLE}(v) = 1$ but $\text{N-ORACLE}(w) = 0$ for any $w$ obtained from $v$ by making one variable determined in $v$ undetermined.
+
+Finally we define two further oracles, ones of \emph{relevant possibility} RP and of \emph{relevant accompaniment} RA. For convenience we define the first by how it behaves on vectors represented as monomials: $\text{RP}(m) = 1$ iff from some monomial $m'$ $mm'$ is a prime implicant of $f$. For sets, $V, W$ of variables we define $\text{RA}(V, W) = 1$ iff every prime implicant of $f$ that contains a variable from $V$ also contains a variable from $W$.
+
+\begin{theorem}[Theorem C]
+The class of \emph{$\mu$-expressions} is learnable via a deduction procedure $\mathcal{C}$ that uses $O(t^2)$ calls of \emph{N-ORACLE}, \emph{RP} and \emph{AP} altogether, where $t$ is the number of variables, (and no calls of \emph{EXAMPLES}.) The procedure always deduces exactly the correct expression.
+\end{theorem}
+
+\begin{proof}
+Let $\lambda$ be the monomial that is the product of no literals. The algorithm will first compute $\text{RP}(p_i)$ for each $p_i$ to determine which of the variables occur in the prime implicants of the function that the expression $f$ to be learnt represents. Let $g_1, \ldots, g_r$ be distinct single variable expressions, one for each $p_i$ for which $\text{RP}(p_i) = 1$. Note that these are exactly the variables that occur in $f$ since $f$ is monotone.
+
+With each $g_i$ we associate two monomials $m_i$ and $\hat{m}_i$. The former will be the single variable $p_j$ that $g_i$ represents. The latter is defined as any monomial $\hat{m}$ having no variable in common with $m_i$ such that $m_i \hat{m}$ is a prime implicant of $f$. The algorithm will construct each such $\hat{m}_i$ as the final value of $m$ in the following procedure: Set $m := \lambda$; while $\text{PI}(mm_i) = 0$ find a $p_k$ not in $mm_i$ such that $\text{RP}(p_k m_i) = 1$ and set $m := p_k m$. Hence in at most $t^2$ calls of PI (i.e.\ $t^2$ calls of N-ORACLE) and $t^2$ calls of RP values for every $\hat{m}_i$ will be found.
+
+Once initialized the algorithm proceeds by alternately executing a \emph{plus-phase} and a \emph{times-phase}. At the start of each phase we have a set of expressions $g_1, \ldots, g_r$ where each $g_i$ is associated with two monomials $m_i$ and $\hat{m}_i$ (having no variables in common) where $m_i$ is a prime implicant and $m_i \hat{m}_i$ is a prime implicant of $f$. We distinguish the $g$'s as \emph{plus} or \emph{times expressions} according to whether the outermost construction rule was addition or multiplication. A plus-phase will first compute an equivalence relation $S$ on the subset of $\{g_i\}$ that are times expressions. For each equivalence class $G$ such that no $g_i \in G$ already occurs as a summand in a sum, we construct a new expression that is the sum of the members of $G$ and call this sum $g_k$ where $k$ is a previously unused index. If some members of $G$ already occur in a sum, say $g_j$, (N.B.\ they are never distributed in more than one sum) then we modify the sum expression $g_j$ to equal the sum of every expression in $G$. A times phase is exactly analogous except that it computes a different equivalence relation, $T$, now on plus expressions, and will form new, or extend old, times expressions. In the above context single variable expressions will be regarded as both times and plus expressions. Also, it is immaterial which of the two kinds of phase is used to start the algorithm.
+
+The intention of the algorithm is best expressed by the claim to follow which will be verified later. Suppose that the expressions occurring in the definition of $f$ are $f_1, \ldots, f_q$ (where $q \leq 2t{-}1$). We shall say that $g \leq f_i$ iff the set of prime implicants of $g$ is a subset of the set of prime implicants of $f_i$ where (i) if $f_i$ is a plus expression then $\bar{f}_i = f_i$ and (ii) if $f_i$ is a times expression then $\bar{f}_i$ is the product of some subset of the multiplicands of $f_i$.
+
+\textbf{Claim 1:} After every phase of the algorithm for every $g_i$ that has been constructed there is exactly one expression $f_i$ such that (i) $g_i \leq f_i$ and (ii) $f_i$ is of the same kind (i.e.\ plus or times) as $g_i$.
+
+The procedure builds up the rooted tree of the expression as rooted subtrees starting from the leaves. One evident difficulty is that there is no \emph{a priori} knowledge available about the shape of the tree. Hence in the grafting process a subtree may become attached to another at just about any node.
+
+Whenever a plus or times expression $g_i$ is created or enlarged its associated $m_i$ and $\hat{m}_i$ is updated as follows. If $g_i$ is a sum then we let $m_i = m_j$ and $\hat{m}_i = \hat{m}_j$ for any $g_j$ that is a summand in $g_i$. If $g_i$ is a product then $m_i$ will be the product of all the $m_j$'s that correspond to multiplicands in $g_i$. Finally $\hat{m}_i$ will be generated as the final value of $m$ in the following procedure: Set $m := \lambda$; while $\text{PI}(mm_i) = 0$ find a $p_k$ not in $mm_i$ such that $\text{RP}(p_k m_i) = 1$ and set $m := p_k m$. Since such an $\hat{m}_i$ has to be found at most $t$ times in the overall algorithm the total cost is at most $t^2$ calls of PI (i.e., $t^2$ calls of N-ORACLE) and $t^2$ calls of RP.
+
+In order to complete the description of the algorithm it remains only to define the equivalence relations $S$ and $T$.
+
+\textbf{Definition:} $g_i \mathrel{S} g_j$ if and only if
+\begin{enumerate}
+    \item[(i)] $\text{PI}(m_i \hat{m}_j) = \text{PI}(m_j \hat{m}_i) = 1$, and
+    \item[(ii)] $m_i, \hat{m}_j$ contains disjoint sets of variables, as do $m_j, \hat{m}_i$.
+\end{enumerate}
+
+For defining $T$ we shall denote by $V_i$ the set of variables that occur in the expression $g_i$.
+
+\textbf{Definition:} $g_i \mathrel{T} g_j$ if and only if $\text{RA}(V_i, V_j) = \text{RA}(V_j, V_i) = 1$.
+
+First we shall verify that $S$ and $T$ are indeed equivalence relations under the assumption that Claim~1 holds at the beginning of each phase. Clearly $S$ and $T$ are defined to be both reflexive and symmetric. Also $T$ is transitive for suppose that $g_i \mathrel{T} g_j$ and $g_j \mathrel{T} g_k$. The former implies that every prime implicant of $f$ containing some variable from $g_i$ also contains some variable from $g_j$. The latter implies that every prime implicant of $f$ containing some variable from $g_j$ also contains a variable from $g_k$. Hence $g_i \mathrel{T} g_k$ follows. In order to verify the transitivity of $S$ we shall make a more general observation about any sub-expression of $f$.
+
+\textbf{Claim 2:} If $m_i, m_j$ are prime implicants of distinct times subexpressions $f_i, f_j$ of $f$ and if for some $m$, with no variable in common with either $m_i$ or $m_j$, both $m_i m$ and $m_j m$ are prime implicants of $f$, then $f_i, f_j$ must occur as summands in the same plus expression of $f$.
+
+\begin{proof}
+Most easily verified by representing expression $f$ as a directed graph (e.g.\ \cite{7}) with edges labelled by the Boolean variables. The sets of labels along directed source paths between a distinguished source node and a distinguished sink node correspond exactly to prime implicants in the case of $\mu$-expressions where all edges have different labels. \qedhere
+\end{proof}
+
+Now to verify that $S$ is transitive suppose that $g_i \mathrel{S} g_j$ and $g_j \mathrel{S} g_k$ where, by Claim~1, $g_i \leq f_i$, $g_j \leq f_j$ and $g_k \leq f_k$ for appropriate times expressions $f_i, f_j, f_k$. Then it follows that $m_i \hat{m}_j$, $m_j \hat{m}_i$ and $m_k \hat{m}_j$ are all prime implicants of $f$ where $m_i, m_j, m_k$ have no variable in common with $\hat{m}_j$. It follows from Claim~2 that $f_i, f_j$ and $f_k$ are addends in the same plus expression. Hence $g_i \mathrel{S} g_k$ follows.
+
+\textbf{Claim 3:} Suppose that after some phase of the algorithm Claim~1 holds and times expressions $g_i, g_j$ have been formed where $g_i \leq f_i$, $g_j \leq f_j$ and $f_i, f_j$ are times expressions. Then $g_i$ and $g_j$ will be placed in the same sum expression at the next plus phase if and only if $f_i = \bar{f}_i$, $f_j = \bar{f}_j$ and $f_i, f_j$ are addends in the same sum expression in $f$.
+
+\begin{proof}
+$(\Rightarrow)$ If $g_i \leq f_i$, $g_j \leq f_j$ and $f_i, f_j$ are in the same sum then $m_i, m_j$ will be prime implicants of $f_i, f_j$. Also $m_i \hat{m}_j$ and $m_j \hat{m}_i$ will be prime implicants of $f$, and the variables in $m_i$ will be disjoint from those in $\hat{m}_j$ as will be those in $m_j$ from those in $\hat{m}_i$. Hence $g_i \mathrel{S} g_j$ will hold and $g_i, g_j$ will be in the same plus expression after the next plus phase.
+
+$(\Leftarrow)$ Suppose that $g_i \leq f_i$, $g_j \leq f_j$ and $g_i \mathrel{S} g_j$ holds. Then $m_i, m_j$ will be prime implicants of $f_i, f_j$ respectively, $m_i \hat{m}_j, m_j \hat{m}_i$ will both be prime implicants of $f$, and the variables in $\hat{m}_j$ will be disjoint from those of both $m_i$ and $m_j$. It follows from Claim~2 that $f_i = \bar{f}_i$ and $f_j = \bar{f}_j$ must occur as summands in the same plus expression of $f$. [N.B.\ Here we are using the fact that Claim~2 remains true if we allow a ``times subexpression'' to be the product of any subset of multiplicands in a times expression in $f$.]
+\end{proof}
+
+\textbf{Claim 4:} Suppose that after some phase of the algorithm Claim~1 holds and plus expressions $g_i \leq f_i$ and $g_j \leq f_j$ ($f_i, f_j$ plus expressions) have been found.
+\begin{enumerate}
+    \item[(i)] If $g_i = \bar{f}_i$ and $g_j = \bar{f}_j$ and $f_i, f_j$ are multiplicands in the same times expression in $f$ then $g_i, g_j$ will be placed in the same times expression after the next times phase.
+    \item[(ii)] If $g_i, g_j$ are placed in the same times expression at any subsequent phase then $f_i, f_j$ are in the same product in $f$.
+\end{enumerate}
+
+\begin{proof}
+(i) If the conditions of (i) hold then $g_i \mathrel{T} g_j$ will be discovered at the next times phase and the claim follows. (ii) If $f_i, f_j$ are not in the same product in $f$ then $f$ contains some prime implicant containing variables from one of $g_i, g_j$ and not from the other. Hence $g_i \mathrel{T} g_j$ will never hold. \qedhere
+\end{proof}
+
+\textbf{Proof of Claim 1.} By induction on the number of phases on Claims~1, 3 and 4 simultaneously. \qed
+
+We define the \emph{depth} of a formula $f_i$ to be the maximum number of alternations of sum and product required in its definition.
+
+\textbf{Claim 5:} If $f_i$ is an expression of depth $k$ in $f$ then after $k$ phases a $g_i$ identical to $f_i$ will have been constructed by the algorithm.
+
+\begin{proof}
+By induction on Claims~3 and~4. \qedhere
+\end{proof}
+
+To conclude the proof of the theorem it remains to analyze the runtime. This is dominated by the cost of computing $m_i$ and $\hat{m}_i$, for which we have already accounted, plus the cost of computing the equivalence relations $S$ and $T$. We first note that fewer than $2t$ expression names $g_i$ are used in the course of the algorithm. When an expression is grafted into another at a point deep in the latter then the semantics of all the subexpressions above will change. By Claims~3 and~4 such grafting can occur when a $g_i$ is added to a sum expression but not when added to a times expression. Hence the values $m_i$ and $\hat{m}_i$ do not need to be changed for any expression when such grafting occurs. It follows that for computing $S$ only $2t$ values of $m_i, \hat{m}_i$ need to be considered. Hence $O(t^2)$ calls of PI or $O(t^3)$ calls of N-ORACLE suffice overall. For computing $T$ grafting may cause a ripple effect. On each occasion the value of $V_j$ may have to be updated for up to $t$ such sets and hence $t^2$ calls of RA will suffice. Hence $O(t^3)$ calls of RA in the overall algorithm will be enough.
+\end{proof}

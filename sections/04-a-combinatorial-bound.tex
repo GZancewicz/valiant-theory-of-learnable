@@ -1,0 +1,65 @@
+\section{A Combinatorial Bound}
+
+The probabilistic analysis needed for our later results can be abstracted into a single
+lemma. The proof of the lemma is independent of the rest of the paper.
+
+We define the function $L(h,S)$ for any real number $h$ greater than one and any positive
+integer $S$ as follows: Let $L(h,S)$ be the smallest integer such that in $L(h,S)$ independent
+Bernoulli trials each with probability $h$ of success, the probability of having fewer than $S$
+successes is less than $h^{-1}$.
+
+The following simple upper bound holds for the whole range of values of $S$ and $h$ and shows
+that $L(h,S)$ is essentially linear both in $h$ and in $S$.
+
+\medskip
+
+\noindent\textbf{PROPOSITION:}\quad For \emph{all} integers $S \geqslant 1$ and \emph{all} real $h > 1$,
+\[
+  L(h,S) \leqslant 2h\,(S + \log_e h) \;.
+\]
+
+\noindent\textit{Proof.}\quad We use the following three well known inequalities of which the last is due to Chernoff
+(see~\cite{5}, p.~18).
+
+\begin{enumerate}
+\item[(a)] For all \quad $x > 0$ \quad $(1 + x^{-1})^x < e$ \;.
+\item[(b)] For all \quad $x > 0$ \quad $(1 - x^{-1})^x < e^{-1}$ \;.
+\item[(c)] In $m$ independent trials each with probability $p$ of success the probability that
+there are at most $k$ successes, where $k < mp$, is at most
+\[
+  \binom{m - mp}{m - k}^{m-k} \binom{mp}{k}^k .
+\]
+\end{enumerate}
+
+The first factor in the expression in (c) above can be rewritten as
+\[
+  \left(1 - \frac{mp - k}{m - k}\right)^{((m-k)/(mp-k))\,(mp-k)} ,
+\]
+using (b) with $x = (m{-}k)/(mp{-}k)$ we can upper bound the product by
+\[
+  e^{-mp+k}\,(mp/k)^k \;.
+\]
+Substituting $m = 2h(S + \log_e h)$, $p = h^{-1}$ and $k = S$ and using logarithms to the base $e$ gives the bound
+\[
+  e^{-2S - 2\log h + S} \cdot \bigl[2\,(1 + (\log h)/S)\bigr]^{(S/\log h)\,\log h} \;.
+\]
+Rewriting this using (a) with $x \approx (\log_e h)/S$ gives
+\[
+  e^{-S - 2\log h} \cdot 2^S \cdot e^{\log h} \leqslant (2/e)^S \cdot e^{-\log h} \leqslant h^{-1} . \qquad \qed
+\]
+
+As an illustration of an application suppose that we have access to EXAMPLES, a source of
+natural positive examples of vectors for concept $F$. Suppose that we want to find an approximation
+to the subset $P$ of variables that are determined in at least one natural example of $F$. Consider
+the following procedure. Pick the first $L(h, |P|)$ vectors provided by EXAMPLES and let $P'$ be the
+union of the sets of variables determined by these vectors. The proposition then implies that with
+probability at least $1 - h^{-1}$ the set $P'$ will have the following property: if a vector is
+chosen with probability distribution $D$ then the probability that it determines a variable in
+$P - P'$ is less than $4h^{-1}$. To see this observe that if $P'$ does not have the claimed property then the
+following has happened: $L(h, |P|)$ trials have been made (i.e.\ calls of EXAMPLES) each with probability
+greater than $h^{-1}$ of success (i.e.\ finding a vector that determines a variable in $P - P'$) but
+there have been fewer than $|P|$ successes (i.e.\ discoveries of new additions to $P'$). The probability of such a happening is less than $h^{-1}$ by the definition of $L$.
+
+The above application shows that the set of variables that are determined in natural examples
+of $F$ can be approximated by a procedure whose \textbf{runtime} is independent of $t$, the total number of
+variables.

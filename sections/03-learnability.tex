@@ -1,0 +1,19 @@
+\section{Learnability}
+
+We shall consider various classes of programs having $p_1,\ldots,p_t$ as inputs and show that in each case any program in the class can be deduced, with only small probability of error, in polynomial time using the protocol previously described. We assume that programs can take the values 1, 0 and undetermined.
+
+More precisely we say that a class $X$ of programs is \emph{learnable} with respect to a given learning protocol if and only if there exists an algorithm $A$ (the deduction procedure) invoking the protocol with the following properties:
+
+\begin{enumerate}
+\item[(a)] The algorithm runs in time polynomial both in an adjustable parameter $h$ and in the various parameters that quantify the size of the program to be learnt, and
+
+\item[(b)] For all programs $f \in X$ and all distributions $D$ over vectors $v$ on which $f$ outputs 1 the algorithm will deduce with probability at least $(1 - h^{-1})$ a program $g \in X$ that never outputs one when it should not, but outputs one almost always when it should. In particular (i) for all vectors $v$\, $g(v) = 1$ implies $f(v) = 1$, and (ii) the sum of $D(v)$ over all $v$ such that $f(v) = 1$ but $g(v) \neq 1$ is at most $h^{-1}$.
+\end{enumerate}
+
+In our definition we have disallowed positive answers from $g$ to be wrong, only because the particular classes $X$ in this paper do not require it. This we call \emph{one-sided error} learning. In other circumstances it may be efficacious to allow two-sided errors. In that more general case we would need to put a probability distribution $\overline{D}$ on the set of vectors such that $f(v) \neq 1$. Condition (i) in (b) is then replaced by: $\Sigma\overline{D}(v)$ over all $v$ such that $f(v) \neq 1$ but $g(v) = 1$ is at most $h^{-1}$.
+
+A second aspect of our definition is that the parameter $h$ is used in two independent probabilistic bounds. This simplifies the statement of the results. It would be more precise, however, to work explicitly with two independent parameters $h_1$ and $h_2$.
+
+Thirdly, we should note that programs that compute concepts should be distinguished from those that compute merely the Boolean function. This distinction has little consequence for the three classes of expressions that we consider since in these cases programs for the concepts follow directly from the specification of the expressions. For the sake of generality our definitions do allow the value of a program to be undefined since a non-total vector will not, in general, determine the value of an expressions as 0 or 1.
+
+It would be interesting to obtain negative results other than the cryptographic evidence mentioned in the introduction, indicating that the class of unrestricted Boolean circuits is not learnable. In the contrary direction the reader can verify that the difficulty of this problem can be upper bounded in various ways. It can be shown that the assumption that P equals NP would imply that the class of Boolean circuits is learnable with two sided error with respect to the protocol that provides random examples from both $D$ and $\overline{D}$.

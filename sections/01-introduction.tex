@@ -1,0 +1,207 @@
+\section{Introduction}
+
+Computability theory became possible once
+precise models became available for modelling the
+commonplace phenomenon of mechanical calculation.
+The theory that evolved has been used to explain
+human experience and to suggest how artificial
+computing devices should be built.  It is also
+worth studying for its own sake.
+
+The commonplace phenomenon of learning surely
+merits similar attention.  The problem is to discover good models that are interesting to study
+for their own sake and promise to be relevant both
+to explaining human experience and to building
+devices that can learn.  The models should also
+shed light on the limits of what can be learnt,
+just as computability does on what can be computed.
+
+In this paper we shall say that a program for
+performing a task has been acquired by \emph{learning} if
+it has been acquired by any means other than
+explicit programming.  Among human skills some
+clearly appear to have a genetically preprogrammed
+element while some others consist of executing an
+explicit sequence of instructions that has been
+memorized.  There remains a large area of skill
+acquisition where no such explicit programming is
+identifiable.  It is this area that we describe
+here as learning.  The recognition of familiar
+objects, such as tables, provide such examples.
+These skills often have the additional property
+that, although we have learnt them, we find it
+difficult to articulate what algorithm we are
+really using.  In these cases it would be especially significant if machines could be made to
+acquire them by learning.
+
+This paper is concerned with precise computational models of the learning phenomenon.  We shall
+restrict ourselves to skills that consist of recognizing whether a \emph{concept} (or predicate) is true
+or not for given data.  We shall say that a concept Q has been learnt if a program for recognizing it has been deduced (i.e.\ by some method
+other than the acquisition from the outside of the
+explicit program).
+
+The main contribution of this paper is that it
+shows that it is possible to design \emph{learning
+machines} that have all three of the following properties.
+
+\begin{enumerate}
+\item[(A)] The machines can provably learn whole
+classes of concepts.  Furthermore these classes can
+be characterized.
+
+\item[(B)] The classes of concepts are appropriate
+and nontrivial for general purpose knowledge, and
+
+\item[(C)] The computational process by which the
+machines deduce the desired programs requires a
+feasible (i.e.\ polynomial) number of steps.
+\end{enumerate}
+
+A learning machine consists of a \emph{learning protocol} together with a \emph{deduction procedure}.  The
+former specifies the manner in which information is
+obtained from the outside.  The latter is the
+mechanism by which a correct recognition algorithm
+for the concept to be learnt is deduced.  At the
+broadest level the suggested \emph{methodology} for
+studying learning is the following:  define a
+plausible learning protocol and investigate the
+class of concepts for which recognition programs
+can be deduced in polynomial time using the
+protocol.
+
+The specific protocols considered in this
+paper allow for two kinds of information supply.
+First the learner has access to a supply of typical data that positively exemplify the concept.
+More precisely, it is assumed that these positive
+examples have a probabilistic distribution determined arbitrarily by nature.  A call of a routine
+EXAMPLES produces one such positive example.  The
+relative probability of producing different examples is determined by the distribution.  The
+second source of information that may be available is a routine ORACLE.  In its most basic
+version, when presented with data it will tell the
+learner whether or not the data positively exemplifies the concept.
+
+The major remaining design choice that has to
+be made is that of knowledge representation.
+Since our declared aim is to represent general
+knowledge, it seems almost unavoidable that we use
+some kind of logic rather than, for example,
+formal grammars or geometrical constructs.  In
+this paper we shall represent concepts as Boolean
+functions of a set of propositional variables.
+The recognition algorithms that we attempt to
+deduce will be therefore Boolean circuits or
+expressions.
+
+The adequacy of the propositional calculus
+for representing knowledge in practical learning
+systems is clearly a crucial question.  Few would
+argue that this much power is not necessary.  The
+question is whether it is enough.  There are
+several arguments suggesting that such a system
+would, at least, be a very good start.  First,
+when one examines the most famous examples of
+systems that embody preprogrammed knowledge,
+namely expert systems such as DENDRAL and MYCIN,
+essentially no logical notation beyond the propositional calculus is used.  Surely it would be
+over-ambitious to try to base learning systems
+on representations that are more powerful than
+those that have been successfully managed in programmed systems.  Second, the results in this
+paper can be negatively interpreted to suggest
+that the class of learnable concepts even within
+the propositional calculus is severely circumscribed.  This suggests that the search for extensions to the propositional calculus that have
+substantially larger learnable classes may be a
+difficult one.
+
+The positive conclusions of this paper are
+that there are specific classes of concepts that
+are learnable in polynomial time using learning
+protocols of the kind described.  These classes
+can all be characterized by defining the class
+of programs that recognize them.  In each case
+the programs are special kinds of Boolean expressions.  The three classes are:  (i) conjunctive normal form expressions with a bounded
+number of literals in each clause, (ii) monotone
+disjunctive normal form expressions, and (iii)
+arbitrary expressions in which each variable
+occurs just once.  In the first of these no calls
+of the oracle are necessary.  In the last no
+access to typical examples is necessary but the
+oracles need to be more powerful than the one
+described above.
+
+The deduction procedure will in each case output an expression that with high likelihood closely
+approximates the expression to be learnt.  Such an
+approximate expression never says yes when it
+should not, but may say no on a small fraction of
+the probability space of positive examples.  This
+fraction can be made arbitrarily small by increasing the runtime of the deduction procedure.  Perhaps the main technical discovery contained in the
+paper is that with this probabilistic notion of
+learning highly convergent learning is possible for
+whole classes of Boolean functions.  This appears
+to distinguish this approach from more traditional
+ones where learning is seen as a process of ``inducing'' some general rule from information that is
+insufficient for a reliable deduction to be made.
+The power of this probabilistic viewpoint is
+illustrated, for example, by the fact that an
+arbitrary set of polynomially many positive examples cannot be relied on to determine expressions
+consisting of even just a single monomial in any
+reliable way.
+
+There is another aspect of our formulation that
+is worth emphasizing.  In a learning system that is
+about to learn a new concept there may be an
+enormous number of propositional variables available.  These may be primitive inputs, the values of
+preprogrammed concepts, or the values of concepts
+that have been learnt previously.  We want the
+complexity of learning the new concept to be related only to the number of variables that may be set
+in natural examples of it, and not on the cardinality of the universe of available variables.
+Hence the questions asked of ORACLE and the values
+given by EXAMPLES will not be truth assignments to
+all the variables.  In the archetypal case they
+will specify an assignment to a subset of the
+variables that is still sufficient to guarantee
+the truth of the function.
+
+Whether the classes of learnable Boolean concepts can be extended significantly beyond the
+three classes given is an interesting question.
+There is circumstantial evidence from cryptography,
+however, that the whole class of functions computable by polynomial size circuits is not
+learnable.  Consider a cryptographic scheme that
+encodes messages by evaluating the function $E_k$
+where $k$ specifies the key.  Suppose that this
+scheme is immune to chosen plaintext attack in the
+sense that even if the values of $E_k$ are known for
+polynomially many different inputs, it is computationally infeasible to deduce an algorithm for $E_k$
+or for an approximation to it.  This is equivalent
+to saying, however, that $E_k$ is not learnable.
+The conjectured existence of good cryptographic
+functions that are easy to compute therefore implies that some easy to compute functions are not
+learnable.
+
+If the class of learnable concepts is as
+severely limited as suggested by our results then
+it would follow that the only way of teaching more
+complicated concepts is to build them up from such
+simple ones.  Thus a good teacher would have to
+identify, name and sequence these intermediate
+concepts in the manner of a programmer.  The results of \emph{learnability theory} would then indicate
+the maximum granularity of the single concepts that
+can be acquired without programming.
+
+In summary, this paper attempts to explore the
+limits of what is learnable as allowed by algorithmic complexity.  The results are distinguishable
+from the diverse body of previous work on learning
+because they attempt to reconcile the three properties (A)--(C) mentioned earlier.  Closest in
+rigour to our approach is the inductive inference
+literature (see Angluin and Smith \cite{1} for a survey)
+that deals with inducing such things as recursive
+functions or formal grammars (but not Boolean
+functions) from examples.  There is a large body
+of work on pattern recognition and classification,
+using statistical and other tools, (e.g.\ \cite{4}) but
+the question of general knowledge representation is
+not addressed there directly.  Learning, in various
+less formal senses, has been studied widely as a
+branch of artificial intelligence.  A survey and
+bibliography can be found in \cite{2,6}.  In their
+terminology the subject of this paper is concept
+learning.

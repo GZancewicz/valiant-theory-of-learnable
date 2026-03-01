@@ -1,0 +1,138 @@
+\section{DNF Expressions}
+
+A \emph{disjunctive normal form} (DNF) expression is
+any sum $m_1 + m_2 + \ldots + m_r$ of monomials where each
+monomial $m_i$ is a product of literals. For example
+$p_1 p_2 + \bar{p}_1 p_3 p_4$ is a DNF expression. Such expressions appear particularly easy for humans to
+comprehend. Hence we expect that any practical
+learning system would have to allow for them.
+
+An expression is \emph{monotone} if no variable is
+negated in it. We shall show that for monotone DNF
+expressions there exists a simple deduction procedure that uses both EXAMPLES and ORACLE. For
+unrestricted DNF a similar result can be proved
+with respect to a different size measure. In the
+unrestricted case there is the additional difficulty
+that we can guarantee to deduce a program only for
+the function, and not for the concept. This difficulty does not arise in the monotone case where
+given an expression we can always compute the value
+of the associated concept for a vector $v$ by
+making the substitution and asking whether the resulting expression is identically true.
+
+A monomial $m$ is a \emph{prime implicant} of a function $F$ (or of an expression representing the
+function) if $m \Rightarrow F$ and if $m' \not\Rightarrow F$ for any $m'$
+obtained by deleting one literal from $m$. A DNF
+expression is \emph{prime} if it consists of the sum of
+prime implicants none of which is redundant in the
+sense of being implied by the sum of the others.
+There is always a unique prime DNF expression in
+the monotone case, but not in general. We therefore define the \emph{degree} of a DNF expression to be
+the largest number of monomials that a prime DNF
+expression equivalent to it can have. The unique
+prime DNF expression in the monotone case is simply
+the sum of all the prime implicants.
+
+\medskip
+\noindent\textbf{THEOREM B:} \emph{The class of monotone DNF expressions
+is learnable via an algorithm B that uses
+$L = L(h,d)$ calls of EXAMPLES and \; $dt$ calls of
+ORACLE, where $d$ is the degree of the DNF expression $f$ to be learnt and $t$ the number of
+variables.}
+
+\medskip
+\noindent\textit{Proof.}\quad The algorithm is initialized with formula
+$g$ identically equal to the constant zero. The
+algorithm then calls EXAMPLES $L$ times to produce
+positive examples of $f$. Each time a vector $v$
+is produced such that $v \neq g$ a new monomial $m$
+is added to $g$. The monomial $m$ is the product
+of those literals determined in $v$ that are
+essential to make $v \Rightarrow f$. More precisely, the loop
+that is executed $L$ times is the following:
+
+\begin{verbatim}
+begin v := EXAMPLES
+      if v != g then
+      begin for i := 1 to t do
+                if p_i is determined in v then
+                begin set v equal to v but with p_i := *;
+                       if ORACLE(v) = 1 then v := v
+                end
+            set m equal to the product of all
+                    literals q such that v => q;
+            g := g + m
+      end
+end
+\end{verbatim}
+
+The test $v \neq g$ amounts to asking whether
+none of the monomials of $g$ is made true by the
+values determined to be true in $v$. Every time
+EXAMPLES produces a value $v$ such that $v \neq g$ the
+inner loop of the algorithm will find a prime implicant $m$ to add to $g$. Each such $m$ is
+different from any previously added (since the
+contrary would have implied that $v \Rightarrow g$). It
+follows that such a $v$ will be found at most $d$
+times and hence ORACLE will be called at most $dt$
+times.
+
+Let $X = \Sigma D(w)$ with summation over all (not
+necessarily total) vectors $w$ such that $w \Rightarrow f$
+but $w \neq g$. This quantity is defined for each
+intermediate value of $g$ in the course of the
+algorithm, is initially unity, and decreases monotonically with time. Now a monomial will be added
+to $g$ each time EXAMPLES outputs a vector $v$ such
+that $v \neq g$. The probability of this occurring at
+any call of EXAMPLES is exactly $X$. The process
+of running the algorithm to completion can have
+just two possible outcomes: (i) At some time $X$
+has become less than $h^{-1}$, in which case the final
+expression $g$ found will approximate to $f$ as
+required by the definition of learnability.
+(ii) The value of $X$ never goes below $h^{-1}$ and
+hence $g$ is not an acceptable approximation. The
+probability of the latter eventuality is, however,
+at most $h^{-1}$ since it corresponds to the situation
+of performing $L(h, (2t)^{k+1})$ Bernoulli experiments
+(i.e.\ calls of EXAMPLES) each with probability
+greater than $h^{-1}$ of success (i.e.\ of finding a $v$
+such that $v \neq g$) and obtaining fewer than $d$
+successes (each manifested by the addition of a
+new monomial). \hfill $\square$
+
+\medskip
+
+For unrestricted DNF expressions several
+problems arise. The main source of difficulty is
+the fact that the problem of determining whether
+a nontotal vector implies the function specified by
+a DNF formula is NP-hard. This is simply
+because the problem of determining whether the nowhere determined vector implies the function is the
+tautology question of Cook~[3]. An immediate
+consequence of this is that it is unreasonable to
+assume that the program being learnt computes concepts rather than functions. Another consequence
+is that in any algorithm akin to Algorithm B the
+test $v \neq g$ may not be feasible if $v$ is not
+total. Algorithm B is sufficient, however, to
+establish the following:
+
+\medskip
+\noindent\textbf{THEOREM B\,$'$:} \emph{Suppose the notion of learnability is
+restricted to distributions $D$ such that $D(v) = 0$
+whenever $v$ is not total. Then the class of DNF
+expressions is learnable, in the sense that programs
+for the functions (but not necessarily the concepts)
+can be deduced in $L(h,d)$ calls of EXAMPLES and \; $dt$
+calls of ORACLE where $d$ is the degree of the DNF
+expression to be learnt.}
+
+\medskip
+
+Finally, it may be worth emphasizing that the
+monotone case is nonproblematic and the deduction
+procedure for it very simple-minded. It may be
+interesting to pursue more sophisticated deduction
+procedures for it if contexts can be found in
+which they can be proved advantageous. The
+question as to whether monotone DNF expressions
+can be learnt from EXAMPLES alone is open. A positive answer would be especially significant.

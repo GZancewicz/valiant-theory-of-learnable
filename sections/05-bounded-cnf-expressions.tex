@@ -1,0 +1,133 @@
+\section{Bounded CNF Expressions}
+
+A \emph{conjunctive normal form} (CNF) expression is any product
+$c_1 c_2 \cdots c_r$ of clauses where each clause $c_i$ is a sum
+$q_1 + q_2 + \cdots + q_j$ of literals. A \emph{literal} $q$ is
+either a variable $p$ or the negation $\bar{p}$ of a variable. For
+example, $(p_1 + p_2)(\bar{p}_1 + \bar{p}_2 + p_3)$ is a CNF
+expression. For a positive integer $k$ a \emph{$k$-CNF expression} is
+a CNF expression where each clause is the sum of at most $k$
+literals.
+
+For CNF expressions in general we do not know of any polynomial time
+deduction procedure with respect to our learning protocol. The
+question of whether one exists is tantalizing because of its apparent
+simplicity.
+
+In this section we shall prove that for any fixed integer $k$ the
+class of $k$-CNF expressions is learnable. In fact it is learnable
+easily in the sense that calls of EXAMPLES suffice and no calls of
+ORACLE are required.
+
+In this and subsequent sections we shall use the relation $\Rightarrow$
+on concepts as follows: $F \Rightarrow G$ means that for all vectors
+$\mathbf{v}$ whenever $F(\mathbf{v}) = 1$ it is also the case that
+$G(\mathbf{v}) = 1$. (N.B.\ This is equivalent to the relation
+$F \Rightarrow G$ when $F$, $G$ are regarded as functions.) For
+brevity we shall often denote both expressions and even vectors by
+the concepts they represent. Thus the concept represented by vector
+$\mathbf{w}$ is true for exactly those vectors that agree with
+$\mathbf{w}$ on all variables on which $\mathbf{w}$ is determined.
+The concept represented by expression $f$ is obtained by considering
+the Boolean function computed by $f$ and extending its domain to
+become a concept. In this section we regard a clause $c_i$ to be a
+special kind of expression. In Sections 7 and 8 we consider monomials
+$m$, simple products of literals, as special forms of expressions. In
+all cases statements of the form $f \Rightarrow g$,
+$\mathbf{v} \Rightarrow c_i$, $\mathbf{v} \Rightarrow m$ or
+$m \Rightarrow f$ can be understood by interpreting the two sides as
+concepts or functions in the obvious way.
+
+\begin{theorem}[Theorem A]
+For any positive integer $k$ the class of $k$-CNF expressions is
+learnable via an algorithm $A$ that uses
+$L = L(h, (2t)^{k+1})$ calls of \textup{EXAMPLES} and no calls of
+\textup{ORACLE}, where $t$ is the number of variables.
+\end{theorem}
+
+\begin{proof}
+The algorithm is initialized with formula $g$ as the product of all
+possible clauses of up to $k$ literals from
+$\{p_1, \bar{p}_1, p_2, \bar{p}_2, \ldots, p_t, \bar{p}_t\}$.
+Clearly the number of ways of choosing a clause of exactly $k$
+literals is at most $(2t)^k$ and hence the number of ways of choosing
+a clause with up to $k$ literals is less than
+$2t + (2t)^2 + \cdots + (2t)^k < (2t)^{k+1}$. This bounds the
+initial number of clauses in $g$.
+
+The algorithm then calls EXAMPLES $L$ times to give positive examples
+of the concept represented by $k$-CNF formula $f$. For each vector
+$\mathbf{v}$ so obtained it deletes all of the remaining clauses in
+$g$ that do not contain a literal that is determined to be true in
+$\mathbf{v}$. (I.e.\ in the clauses deleted each literal is either
+not determined or is negated in $\mathbf{v}$.) More precisely the
+following is repeated $L$ times:
+
+\begin{tabbing}
+\textbf{begin} \= $\mathbf{v} := \text{EXAMPLES}$ \\
+\> for each $c_i$ in $g$ delete $c_i$ if $\mathbf{v} \not\Rightarrow c_i$. \\
+\textbf{end}
+\end{tabbing}
+
+The claim is that with high probability the value of $g$ after the
+$L$-th execution of this block will be the desired approximation to
+the formula $f$ that is being learnt.
+
+Initially the set of vectors $\{\mathbf{v} \mid \mathbf{v} \Rightarrow g\}$
+is clearly empty. We first claim that as the algorithm proceeds the
+set $\{\mathbf{v} \mid \mathbf{v} \Rightarrow g\}$ will always be a
+subset of $\{\mathbf{v} \mid \mathbf{v} \Rightarrow f\}$. To prove
+this it is clearly sufficient to prove the same statement when both
+sets are restricted to only total vectors. Let $B$ be the product of
+all the clauses $c$ containing up to $k$ literals with the property
+that ``if $\mathbf{v} \Rightarrow f$ then
+$\mathbf{v} \Rightarrow c$.'' It is clear that in the course of the
+algorithm no clause in $B$ can be ever deleted. Hence it is certainly
+true that
+$\{\mathbf{v} \mid \mathbf{v} \Rightarrow g\} \subseteq \{\mathbf{v} \mid \mathbf{v} \Rightarrow B\}$.
+To establish the claim it remains only to prove that $B$ computes the
+same Boolean function as $f$. (In fact $B$ will be the maximal
+$k$-CNF formula equivalent to $f$.) It is easy to see that
+$f \Rightarrow B$ since by the definition of $B$, for every $c$ in
+$B$ it is the case that ``for all $\mathbf{v}$ if
+$\mathbf{v} \Rightarrow f$ then $\mathbf{v} \Rightarrow c$.'' To
+verify the converse, that $B \Rightarrow f$, we first note that, by
+definition, $f$ is a $k$-CNF formula. If some clause in $f$ did not
+occur in $B$ then this clause $c'$ would have the property that
+``$\exists \mathbf{v}$ such that $\mathbf{v} \Rightarrow f$ but
+$\mathbf{v} \not\Rightarrow c'$.'' But this is impossible since if
+$c'$ is a clause of $f$ and if $\mathbf{v} \not\Rightarrow c'$ then
+$\mathbf{v} \not\Rightarrow f$. We conclude that every $k$-CNF
+representation of the function that $f$ represents consists of a set
+of clauses that is a subset of the clauses in $B$. Hence
+$B \Rightarrow f$.
+
+Let $X = \Sigma D(\mathbf{v})$ with summation over all (not
+necessarily total) vectors $\mathbf{v}$ such that
+$\mathbf{v} \Rightarrow f$ but $\mathbf{v} \not\Rightarrow g$. This
+quantity is defined for each intermediate value of $g$ in the course
+of the algorithm and, as is easily verified, it is monotone
+decreasing with time. Now clauses will be removed from $g$ whenever
+EXAMPLES outputs a vector $\mathbf{v}$ such that
+$\mathbf{v} \not\Rightarrow g$. The probability of this happening at
+any moment is exactly the current value of $X$. Also, the process of
+running the algorithm to completion can have one of just two possible
+outcomes: (i) At some point $X$ becomes less than $h^{-1}$, in which
+case the $g$ found will approximate to $f$ exactly as required by the
+definition of learnability. (ii) The value of $X$ never goes below
+$h^{-1}$ and hence $g$ is not an acceptable approximation. The
+probability of the latter eventuality is, however, at most $h^{-1}$
+since it corresponds to the situation of performing
+$L(h, (2t)^{k+1})$ Bernoulli experiments (i.e.\ calls of EXAMPLES)
+each with probability greater than $h^{-1}$ of success (i.e.\ finding
+a $\mathbf{v}$ such that $\mathbf{v} \not\Rightarrow g$) and
+obtaining fewer than $(2t)^{k+1}$ successes (a success being
+manifested by the removal of at least one clause from $g$).
+\qed
+\end{proof}
+
+In conclusion we observe that a CNF expression $g$ immediately yields
+a program for computing the associated concept. Given a vector
+$\mathbf{v}$ we substitute the determined truth values in $g$. The
+concept will be true for $\mathbf{v}$ if and only if all the clauses
+are made true by the substitution.
